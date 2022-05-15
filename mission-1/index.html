@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Findr</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+  <img src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80" alt="keyboard" class="bg-img">
+  <div class="navbar">
+    <h1>Image Findr</h1>
+    <nav>
+      <a href="#" class="nav-btn">Home</a>
+      <a href="https://unsplash.com/" target="_blank" class="nav-btn">Unsplash</a>
+      <a href="https://pixabay.com/" target="_blank" class="nav-btn">Pixabay</a>
+      <a href="https://www.pexels.com/" target="_blank" class="nav-btn">Pexels</a>
+    </nav>
+  </div>
+  <main>
+    <div class="slideshow-container">
+      <div></div>
+    </div>
+    <div class="contact-form">
+      <form action="">
+        <h2>Have a suggestion to improve this website? <em>Contact us here!</em></h2>
+        <div class="contact-input">
+          <label>First Name: </label><input type="text" name="firstName" placeholder="John" required>
+        </div>
+        <div class="contact-input">
+          <label>Last Name: </label><input type="text" name="lastName" placeholder="Smith">
+        </div>
+        <div class="contact-input">
+          <label>Email: </label><input type="email" name="email" placeholder="jsmith@gmail.com">
+        </div>
+        <div class="contact-input">
+          <label>Mobile: </label><input type="text" name="mobile" placeholder="+64 12 345 6789">
+        </div>
+        <div class="contact-input">
+          <label>Preferred contact method: </label>
+          <input type="radio" name="preference" value="email"><label>Email</label>
+          <input type="radio" name="preference" value="mobile"><label>Mobile</label>
+        </div>
+        <div class="contact-input">
+          <label>Share your ideas with us below:</label><br>
+          <textarea name="message" cols="30" rows="10" required placeholder="I'd like this website to..." ></textarea>
+        </div>
+        <div class="contact-input">
+          <div class="submit-container">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
+            <input type="submit" class="submit" value="Share Ideas">
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+  <footer>
+    <p>Developed by Aidan Nairn.</p>
+  </footer>
+</body>
+</html>

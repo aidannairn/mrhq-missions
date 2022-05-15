@@ -1,0 +1,222 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  background-color: rgb(15, 15, 15);
+  color: whitesmoke;
+  border-color: whitesmoke;
+  font-family: Arial;
+  margin: 0;
+}
+
+.bg-img {
+  pointer-events: none;
+  position: fixed;
+  width: fit-content;
+  height: 100%;
+  z-index: -1;
+  filter: grayscale(70%);
+}
+
+.navbar {
+  display: flex;
+  background-color: black;
+  flex-direction: column;
+}
+
+.navbar h1 {
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
+  justify-content: flex-end;
+  background-color: black;
+}
+
+.nav-btn {
+  margin: 0 5px;
+  padding: 10px;
+  border-top: 2px solid;
+  text-transform: uppercase;
+  transition: 1s;
+  color: whitesmoke;
+  text-decoration: none;
+}
+
+.nav-btn:hover {
+  cursor: pointer;
+  background-color: whitesmoke;
+  color: black;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+}
+
+.slideshow-container {
+  width: 100%;
+  height: 300px;
+  margin: 10px auto;
+}
+
+@keyframes slideshow {
+  0% {background-image: url("https://images.unsplash.com/photo-1536104968055-4d61aa56f46a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80");}
+  20% {background-image: url("https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80");}
+  40% {background-image: url("https://images.unsplash.com/photo-1509395176047-4a66953fd231?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80");}
+  60% {background-image: url("https://images.unsplash.com/photo-1516131206008-dd041a9764fd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80");}
+  80% {background-image: url("https://images.unsplash.com/photo-1586244346400-7ec57cda0c8b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80");}
+}
+
+.slideshow-container div {
+  background-image: url("https://images.unsplash.com/photo-1536104968055-4d61aa56f46a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80");
+  animation-name: slideshow;
+  animation-duration: 25s;
+  animation-iteration-count: infinite;
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.contact-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-form h2 {
+  margin: 5px 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 5px;
+  margin-bottom: 50px;
+}
+
+.contact-input {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px;
+}
+
+input {
+  background-color: rgb(15, 15, 15);
+  margin-top: 5px;
+  padding: 5px;
+  font-size: 18px;
+  color: whitesmoke;
+  border: 1px solid whitesmoke;
+  border-radius: 5px;
+  width: 100%;
+}
+
+input[type="radio"] {
+  width: auto;
+  margin: 1.3px 3px 0 10px;
+}
+
+textarea {
+  margin: 10px 0 0;
+  background-color: rgb(15, 15, 15);
+  color: whitesmoke;
+  border-color: whitesmoke;
+  border-radius: 5px;
+  padding: 5px;
+  width: 100%
+}
+
+.submit-container {
+  display: flex;
+  color: black;
+  margin-left: auto;
+}
+
+.submit-container i {
+  font-size: 20px;
+  background-color: rgb(218, 218, 218);
+  border-radius: 5px 0 0 5px;
+  padding: 10px 15px;
+}
+
+.contact-input input[type="submit"] {
+  background-color: whitesmoke;
+  border-radius: 0 5px 5px 0;
+  color: black;
+  font-weight: bold;
+  transition: 0.5s;
+  cursor: pointer;
+  width: fit-content;
+  padding: 10px;
+  margin-top: 0;
+}
+
+.contact-input input[type="submit"]:hover {
+  background-color: black;
+  color: whitesmoke;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  background-color: black;
+}
+
+@media screen and (min-width: 768px) {
+  .navbar, nav, main {
+    flex-direction: row;
+  }
+
+  .navbar h1 {
+    width: 50%;
+    margin: 0 0 0 10px;
+    align-self: center;
+    text-align: left;
+  }
+
+  nav {
+    width: 50%;
+    justify-content: flex-end;
+    margin: 10px;
+  }
+
+  .nav-btn {
+    border: 2px solid;
+  }
+
+  main {
+    align-content: center;
+    padding: 50px 0;
+  }
+
+  .slideshow-container {
+    width: 60%;
+    height: auto;
+  }
+
+  .contact-form {
+    width: 40%;
+    height: auto;
+  }
+
+  form {
+    margin-bottom: 0;
+    border: 2px solid;
+    max-width: 80%;
+  }
+}

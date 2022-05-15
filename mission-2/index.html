@@ -5,8 +5,53 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mission Two</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js"></script>
 </head>
-<body>
-  
+<body id="body" onload="checkEdits()">
+  <div id="theme">
+    <div class="navbar">
+      <nav>
+        <a href="#" class="nav-btn">One</a>
+        <a href="#" class="nav-btn">Two</a>
+        <a href="#" class="nav-btn">Three</a>
+      </nav>
+    </div>
+    <main>
+      <div class="theme-container">
+        <h2>Choose your theme</h2>
+        <div class="themes">
+          <div class="theme" onclick="changeTheme('default')">Default
+            <div class="colors">
+              <div class="color" style="background-color: #f8f9fa"></div>
+              <div class="color" style="background-color: #dee2e6"></div>
+              <div class="color" style="background-color: #ced4da"></div>
+              <div class="color" style="background-color: #495057"></div>
+              <div class="color" style="background-color: #212529"></div>
+            </div>
+          </div>
+          <div class="theme" onclick="changeTheme('dark')">Dark
+            <div class="colors">
+              <div class="color" style="background-color: #212529"></div>
+              <div class="color" style="background-color: #495057"></div>
+              <div class="color" style="background-color: #ced4da"></div>
+              <div class="color" style="background-color: #dee2e6"></div>
+              <div class="color" style="background-color: #f8f9fa"></div>
+            </div>
+          </div>
+          <div class="theme" onclick="changeTheme('candyfloss')">Candyfloss
+            <div class="colors">
+              <div class="color" style="background-color: #fb6f92"></div>
+              <div class="color" style="background-color: #ff8fab"></div>
+              <div class="color" style="background-color: #ffb3c6"></div>
+              <div class="color" style="background-color: #ffc2d1"></div>
+              <div class="color" style="background-color: #ffe5ec"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer>Developed by Aidan Nairn</footer>
+  </div>
 </body>
 </html>

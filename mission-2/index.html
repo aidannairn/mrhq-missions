@@ -7,10 +7,11 @@
   <title>Mission Two</title>
   <link rel="stylesheet" href="styles.css">
   <script src="app.js"></script>
+  <script src="themes.js"></script>
 </head>
 <body id="body" onload="checkTheme(), addThemeSelector()">
-  <div id="theme" class="default">
-    <div class="navbar">
+  <div id="theme-wrapper">
+    <div class="navbar bg-secondary">
       <nav>
         <a href="#" class="nav-btn">One</a>
         <a href="#" class="nav-btn">Two</a>
@@ -18,7 +19,7 @@
       </nav>
     </div>
     <main>
-      <div class="theme-container">
+      <div id="theme-selection-container">
         <h2 id="theme-heading">Choose your theme</h2>
       </div>
     </main>

@@ -63,8 +63,13 @@ main {
   opacity: 0.5;
 }
 
+.palette-heading {
+  text-transform: capitalize;
+}
+
 .colors {
   display: flex;
+  font-size: medium;
 }
 
 .color {

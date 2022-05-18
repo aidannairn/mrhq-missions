@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="styles.css">
   <script src="app.js"></script>
 </head>
-<body id="body" onload="checkEdits()">
-  <div id="theme">
+<body id="body" onload="checkTheme(), addThemeSelector()">
+  <div id="theme" class="default">
     <div class="navbar">
       <nav>
         <a href="#" class="nav-btn">One</a>
@@ -19,36 +19,7 @@
     </div>
     <main>
       <div class="theme-container">
-        <h2>Choose your theme</h2>
-        <div class="themes">
-          <div class="theme" onclick="changeTheme('default')">Default
-            <div class="colors">
-              <div class="color" style="background-color: #f8f9fa"></div>
-              <div class="color" style="background-color: #dee2e6"></div>
-              <div class="color" style="background-color: #ced4da"></div>
-              <div class="color" style="background-color: #495057"></div>
-              <div class="color" style="background-color: #212529"></div>
-            </div>
-          </div>
-          <div class="theme" onclick="changeTheme('dark')">Dark
-            <div class="colors">
-              <div class="color" style="background-color: #212529"></div>
-              <div class="color" style="background-color: #495057"></div>
-              <div class="color" style="background-color: #ced4da"></div>
-              <div class="color" style="background-color: #dee2e6"></div>
-              <div class="color" style="background-color: #f8f9fa"></div>
-            </div>
-          </div>
-          <div class="theme" onclick="changeTheme('candyfloss')">Candyfloss
-            <div class="colors">
-              <div class="color" style="background-color: #fb6f92"></div>
-              <div class="color" style="background-color: #ff8fab"></div>
-              <div class="color" style="background-color: #ffb3c6"></div>
-              <div class="color" style="background-color: #ffc2d1"></div>
-              <div class="color" style="background-color: #ffe5ec"></div>
-            </div>
-          </div>
-        </div>
+        <h2 id="theme-heading">Choose your theme</h2>
       </div>
     </main>
     <footer>Developed by Aidan Nairn</footer>

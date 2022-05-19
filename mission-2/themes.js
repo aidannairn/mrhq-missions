@@ -24,7 +24,7 @@ const themes = [
     bgPrimary: '#ffe5ec'
   },
   {
-    name: 'forest',
+    name: 'nature',
     colorPrimary: '#6c584c',
     colorSecondary: '#a98467',
     colorTertiary: '#adc178',

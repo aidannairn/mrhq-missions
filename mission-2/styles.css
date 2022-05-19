@@ -10,13 +10,15 @@ body {
 }
 
 #theme-wrapper {
+  position: relative;
+  min-height: 100%;
   height: 100vh;
   width: 100vw;
 }
 
 .navbar {
   display: flex;
-  padding: 10px;
+  padding: 1rem;
 }
 
 nav a {
@@ -28,14 +30,21 @@ nav a {
   padding: 5px;
 }
 
-main {
-  display: flex;
+nav a:hover {
+  opacity: 50%;
 }
 
-.theme-container {
-  border: solid 2px;
+main {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 5rem;
+}
+
+#theme-selection-container {
   display: flex;
   flex-direction: column;
+  padding: 1rem;
+  width: 100%;
 }
 
 .theme-container h2 {
@@ -43,9 +52,12 @@ main {
 }
 
 .theme {
+  align-items: center;
+  display: flex;
   border: 2px solid;
   margin: 2.5px;
   padding: 5px;
+  justify-content: space-between;
 }
 
 .theme:hover {
@@ -55,6 +67,7 @@ main {
 
 .palette-heading {
   text-transform: capitalize;
+  font-size: large;
 }
 
 .colors {
@@ -69,3 +82,17 @@ main {
   margin: 2.5px;
   width: 30px;
 }
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
+/* @media screen and (min-width: 768px) {
+  #theme-wrapper {
+    height: 100vh;
+  }
+} */

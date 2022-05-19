@@ -11,6 +11,47 @@ const applyTheme = (themeName) => {
       themeWrapper.style.borderColor = theme.bgSecondary
       themeWrapper.style.color = theme.colorPrimary
 
+      const selectorThemeStyles = [
+        {
+          selectorType: 'className',
+          selector: 'bg-secondary',
+          css: {
+            backgroundColor: theme.bgSecondary
+          }
+        },
+        {
+          selectorType: 'tagName',
+          selector: 'a',
+          css: {
+            color: theme.colorPrimary
+          }
+        }
+      ]
+
+      for (let i = 0; i < selectorThemeStyles.length; i++) {
+        const stylesItem = selectorThemeStyles[i]
+        let customCss = stylesItem.css
+        let stylesItemArray
+
+        if (stylesItem.selectorType === 'className') { stylesItemArray = document.getElementsByClassName(stylesItem.selector) }
+        if (stylesItem.selectorType === 'tagName') { stylesItemArray = document.getElementsByTagName(stylesItem.selector) }
+        if (stylesItem.selectorType === 'id') { stylesItemArray = document.getElementsById(stylesItem.selector) }
+
+        for (let i = 0; i < stylesItemArray.length; i++) {
+          const index = i
+          for (const key in customCss) {
+            console.log(stylesItemArray[index])
+            stylesItemArray[index].style[key] = customCss[key]
+            
+            console.log(stylesItem)
+          }
+        }
+
+        for (const key in selectorThemeStyles[i]) {
+          console.log(stylesItem[key])
+        }
+      }
+
       localStorage.setItem('userTheme', themeName)
     }
   }
@@ -34,7 +75,7 @@ const checkTheme = () => {
 // This function dynamically renders theme selection boxes within the Theme Selection Container div. Each theme selection box is given a unique id, a class of 'theme', a color palette, and includes an event listener so that when a theme is clicked - the applyTheme function is called.
 
 const addThemeSelector = () => {
-  let themeHeading = document.getElementById('theme-heading')
+  let themeHeading = document.getElementById('theme-selection-container')
   
   for (let i = 0; i < themes.length; i++) {
     const themeId = i

@@ -21,6 +21,26 @@
     <main>
       <div id="theme-selection-container">
         <h2 id="theme-heading">Choose your theme</h2>
+        <div id="theme-custom" class="theme" value="custom" onclick="applyTheme('custom')">
+          <h6 class="palette-heading">Custom</h6>
+          <div id="palette-custom" class="colors">
+            <div id="custom-color-container-0" class="color">
+              <input id="custom-color-0" type="color" value="#ffffff" onchange="applyCustomColor(id, value)">
+            </div>
+            <div id="custom-color-container-1" class="color">
+              <input id="custom-color-1" type="color" value="#ffffff" onchange="applyCustomColor(id, value)">
+            </div>
+            <div id="custom-color-container-2" class="color">
+              <input id="custom-color-2" type="color" value="#ffffff" onchange="applyCustomColor(id, value)">
+            </div>
+            <div id="custom-color-container-3" class="color">
+              <input id="custom-color-3" type="color" value="#ffffff" onchange="applyCustomColor(id, value)">
+            </div>
+            <div id="custom-color-container-4" class="color">
+              <input id="custom-color-4" type="color" value="#ffffff" onchange="applyCustomColor(id, value)">
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     <footer class="bg-secondary">Developed by Aidan Nairn</footer>

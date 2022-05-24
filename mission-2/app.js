@@ -7,22 +7,33 @@ const addTheme = (theme) => {
   themeWrapper.style.borderColor = theme.bgSecondary
   themeWrapper.style.color = theme.colorPrimary
 
-  const selectThemeBy = (type, selector) => {
+  const selectThemeBy = (type, selectors) => {
     let selectorArray = []
     const selectorTypes = {
-      applyThemeToClassName: function(selector){
+      applyThemeToClassNames: function(selector){
         selectorArray = document.getElementsByClassName(selector)
       },
-      applyThemeToTagName: function(selector){
+      applyThemeToTagNames: function(selector){
         selectorArray = document.getElementsByTagName(selector)
       },
-      applyThemeToId: function(selector){
-        selectorArray = document.getElementById(selector)
+      applyThemeToIds: function(selector){
+        const element = document.getElementById(selector)
+        selectorArray.push(element)
+      },
+      applyThemeToPseudoClasses: function(selectorWithPseudo){
+        let parentSelector = selectorWithPseudo.split(' ')[0]
+        let pseudoClass = selectorWithPseudo.split(' ')[1]
+
+        parentSelector = document.querySelector(parentSelector)
+        selectorArray = parentSelector.querySelectorAll(pseudoClass)
       }
     }
-    for (const key in selectorTypes) {
-      if (key === type) {
-        selectorTypes[key](selector)
+    for (let selectorIndex = 0; selectorIndex < selectors.length; selectorIndex++) {
+      const selector = selectors[selectorIndex];
+      for (const key in selectorTypes) {
+        if (key === type) {
+          selectorTypes[key](selector)
+        }
       }
     }
     return selectorArray
@@ -30,17 +41,31 @@ const addTheme = (theme) => {
 
   const selectorThemeStyles = [
     {
-      selectorType: 'applyThemeToClassName',
-      selector: 'bg-secondary',
+      selectorType: 'applyThemeToClassNames',
+      selectors: ['bg-secondary'],
       css: {
         backgroundColor: theme.bgSecondary
       }
     },
     {
-      selectorType: 'applyThemeToTagName',
-      selector: 'a',
+      selectorType: 'applyThemeToTagNames',
+      selectors: ['a'],
       css: {
         color: theme.colorPrimary
+      }
+    },
+    {
+      selectorType: 'applyThemeToIds',
+      selectors: ['navbar'],
+      css: {
+        backgroundColor: theme.bgSecondary
+      }
+    },
+    {
+      selectorType: 'applyThemeToPseudoClasses',
+      selectors: ['#theme-selection-container .theme:nth-of-type(2n)'],
+      css: {
+        backgroundColor: theme.bgSecondary
       }
     }
   ]
@@ -49,15 +74,9 @@ const addTheme = (theme) => {
     const stylesItem = selectorThemeStyles[i]
     let customCss = stylesItem.css
     let stylesItemArray = []
-    const { selectorType, selector } = stylesItem
+    const { selectorType, selectors } = stylesItem
 
-    // Changed the following code from single line if statements to a function that applies a method.
-
-    /* if (stylesItem.selectorType === 'applyThemeToClassName') { stylesItemArray = document.getElementsByClassName(stylesItem.selector) }
-    if (stylesItem.selectorType === 'applyThemeToTagName') { stylesItemArray = document.getElementsByTagName(stylesItem.selector) }
-    if (stylesItem.selectorType === 'applyThemeToId') { stylesItemArray = document.getElementsById(stylesItem.selector) } */
-
-    stylesItemArray = selectThemeBy(selectorType, selector)
+    stylesItemArray = selectThemeBy(selectorType, selectors)
 
     for (let i = 0; i < stylesItemArray.length; i++) {
       const index = i
@@ -71,28 +90,26 @@ const addTheme = (theme) => {
 }
 
 const applyTheme = (themeName) => {
-  let theme = {}
+  const savedCustomColors = localStorage.getItem('customColors')
+  savedThemeColors = JSON.parse(savedCustomColors)
 
+  const colorArray = [
+    savedThemeColors.colorPrimary,
+    savedThemeColors.colorSecondary,
+    savedThemeColors.colorTertiary,
+    savedThemeColors.bgSecondary,
+    savedThemeColors.bgPrimary,
+  ]
+
+  for (let i = 0; i <= 4; i++) {
+    document.getElementById(`custom-color-container-${i}`).style.backgroundColor = colorArray[i]
+  }
+  
   if (themeName === 'custom') {
-    let savedCustomColors = localStorage.getItem('customColors')
-    theme = JSON.parse(savedCustomColors)
-
-    const colorArray = [
-      theme.colorPrimary,
-      theme.colorSecondary,
-      theme.colorTertiary,
-      theme.bgSecondary,
-      theme.bgPrimary,
-    ]
-
-    for (let i = 0; i <= 4; i++) {
-      document.getElementById(`custom-color-container-${i}`).style.backgroundColor = colorArray[i]
-    }
-
-    addTheme(theme)
+    addTheme(savedThemeColors)
   } else {
     for (let i = 0; i < themes.length; i++) {
-      theme = themes[i]
+      const theme = themes[i]
       if (theme.name === themeName) {
         addTheme(theme)
       }
@@ -106,12 +123,6 @@ const applyTheme = (themeName) => {
 const checkTheme = () => {
   let themeName
   let customColors = {}
-
-  if (localStorage.userTheme != null) {
-    themeName = localStorage.getItem('userTheme')
-  } else {
-    themeName = 'default'
-  }
 
   if (localStorage.customColors != null) {
     let savedCustomColors
@@ -130,6 +141,13 @@ const checkTheme = () => {
     localStorage.setItem('customColors', JSON.stringify(customColors))
     themeName = customColors.name
   }
+
+  if (localStorage.userTheme != null) {
+    themeName = localStorage.getItem('userTheme')
+  } else {
+    themeName = 'default'
+  }
+
   applyTheme(themeName)
 }
 

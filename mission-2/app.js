@@ -102,7 +102,7 @@ const applyTheme = (themeName) => {
   ]
 
   for (let i = 0; i <= 4; i++) {
-    document.getElementById(`custom-color-container-${i}`).style.backgroundColor = colorArray[i]
+    document.getElementById(`custom-col-${i}`).style.backgroundColor = colorArray[i]
   }
   
   if (themeName === 'custom') {
@@ -115,7 +115,6 @@ const applyTheme = (themeName) => {
       }
     }
   }
-  // return themeWrapper
 }
 
 // When the body element loads/reloads this function will check to see whether a theme has been saved to localStorage. If it has - apply that theme by retrieving the theme name and using it as a parameter for the applyTheme function. If not - set the theme name to 'default' and call the applyTheme function.
@@ -147,65 +146,72 @@ const checkTheme = () => {
   } else {
     themeName = 'default'
   }
-
+  addCustomThemeSelector(customColors)
   applyTheme(themeName)
 }
 
 // This function dynamically renders theme selection boxes within the Theme Selection Container div. Each theme selection box is given a unique id, a class of 'theme', a color palette, and includes an event listener so that when a theme is clicked - the applyTheme function is called.
 
 const addThemeSelector = () => {
+  for (let i = 0; i < themes.length; i++) addCustomThemeSelector(themes[i])
+}
+
+const addCustomThemeSelector = (theme) => {
   let themeHeading = document.getElementById('theme-selection-container')
-  
-  for (let i = 0; i < themes.length; i++) {
-    const themeId = i
-    let theme
 
-    theme = document.createElement('div')
-    theme.setAttribute('id', `theme-${i}`)
-    theme.classList.add('theme')
-    theme.setAttribute('value', themes[i].name)
-    theme.addEventListener('click', (e) => applyTheme(themes[i].name))
+  const {
+    name,
+    colorPrimary,
+    colorSecondary,
+    colorTertiary,
+    bgSecondary,
+    bgPrimary
+  } = theme
 
-    theme.innerHTML = `
-      <h6 class="palette-heading">${themes[i].name}</h6>
-      <div id="palette-${i}" class="colors"></div>
-    `
+  themeDiv = document.createElement('div')
+  themeDiv.setAttribute('id', `theme-${name}`)
+  themeDiv.classList.add('theme')
+  themeDiv.setAttribute('value', name)
+  themeDiv.addEventListener('click', () => applyTheme(name))
 
-    themeHeading.appendChild(theme)
+  themeDiv.innerHTML = `
+    <h6 class="palette-heading">${name}</h6>
+    <div id="palette-${name}" class="colors"></div>
+  `
+  themeHeading.appendChild(themeDiv)
 
-    const colorArray = [
-      themes[i].colorPrimary,
-      themes[i].colorSecondary,
-      themes[i].colorTertiary,
-      themes[i].bgSecondary,
-      themes[i].bgPrimary,
-    ]
+  const colorArray = [colorPrimary, colorSecondary, colorTertiary, bgSecondary, bgPrimary]
 
-    for (let i = 0; i <= 4; i++) {
-      const color = document.createElement('div')
-      color.classList.add('color')
+  for (let i = 0; i <= 4; i++) {
+    const color = document.createElement('div')
+    color.setAttribute('id', `${name}-col-${i}`)
+    color.classList.add('color')
 
-      document.getElementById(`palette-${themeId}`).appendChild(color).style.backgroundColor = colorArray[i]
+    if (name === 'custom') {
+      color.innerHTML = `
+        <input id="custom-color-${i}" type="color" value="#ffffff" onchange="applyCustomColor(id, value)">
+      `
     }
+    document.getElementById(`palette-${name}`).appendChild(color).style.backgroundColor = colorArray[i]
   }
 }
 
 const applyCustomColor = (id, value) => {
-  let customColorIndex = id[13]
-  let customColArr = document.getElementById('palette-custom').getElementsByClassName('color')
-  let customCol = customColArr[customColorIndex]
-  customCol.style.backgroundColor = value
+  const colorIndex = id[id.length - 1]
+  const colArr = document.getElementById('palette-custom').getElementsByClassName('color')
+  const col = colArr[colorIndex]
+  col.style.backgroundColor = value
 
-  let customColors = {}
-  
-  customColors = localStorage.getItem('customColors')
+  console.log(colArr)
+
+  let customColors = localStorage.getItem('customColors')
   customColors = JSON.parse(customColors)
 
-  if (customColorIndex == 0) { customColors.colorPrimary = value }
-  if (customColorIndex == 1) { customColors.colorSecondary = value }
-  if (customColorIndex == 2) { customColors.colorTertiary = value }
-  if (customColorIndex == 3) { customColors.bgSecondary = value }
-  if (customColorIndex == 4) { customColors.bgPrimary = value }
+  if (colorIndex == 0) { customColors.colorPrimary = value }
+  else if (colorIndex == 1) { customColors.colorSecondary = value }
+  else if (colorIndex == 2) { customColors.colorTertiary = value }
+  else if (colorIndex == 3) { customColors.bgSecondary = value }
+  else if (colorIndex == 4) { customColors.bgPrimary = value }
 
   localStorage.setItem('customColors', JSON.stringify(customColors))
   localStorage.setItem('userTheme', 'custom')

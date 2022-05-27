@@ -33,3 +33,5 @@ const themes = [
   }
 ]
 
+export { themes as default }
+

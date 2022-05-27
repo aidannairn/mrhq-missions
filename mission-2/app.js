@@ -1,3 +1,60 @@
+import themes from './themes.js'
+import elements from './elements.js'
+
+/*  Activated via an Event Listener. 
+    When a color input value is changed - pass the id of the input and new value to the function below. 
+
+    The input field is set to have an opacity of 0. This is because when setting input to type, the input has automatic formating applied that doesn't match the styling for the other themes.
+
+    The first part to this sets the background color of the container of the input.
+
+    The second part to this function modifies the color value that is saved to Local Storage.
+*/
+const applyCustomColor = (id, value) => {
+  const colorIndex = id[id.length - 1] // Get the value of the last character of the id. The last character will always be a number between 0 and 4.
+  const colArr = document.getElementById('palette-custom').getElementsByClassName('color')
+  const col = colArr[colorIndex]
+  col.style.backgroundColor = value
+
+  let customColors = localStorage.getItem('customColors')
+  customColors = JSON.parse(customColors)
+
+  // Match the Color Index to a number and set the new color value accordingly.
+  if (colorIndex == 0) { customColors.colorPrimary = value }
+  else if (colorIndex == 1) { customColors.colorSecondary = value }
+  else if (colorIndex == 2) { customColors.colorTertiary = value }
+  else if (colorIndex == 3) { customColors.bgSecondary = value }
+  else if (colorIndex == 4) { customColors.bgPrimary = value }
+
+  localStorage.setItem('customColors', JSON.stringify(customColors))
+  localStorage.setItem('userTheme', 'custom')
+  applyTheme('custom')
+}
+
+// Render initial elements within the body.
+const renderElement = () => {
+  elements.forEach(element => {
+    const {
+      parentSelector,
+      tagName,
+      attributes,
+      content
+    } = element
+
+    const parent = document.querySelector(parentSelector)
+    let newElement = document.createElement(tagName)
+    if (attributes) { 
+      for (const key in attributes) {
+        newElement.setAttribute(key, attributes[key])
+      }
+    }
+    
+    if (content) newElement.textContent = content
+    
+    parent.appendChild(newElement)
+  })
+}
+
 // Function is given the theme name as a parameter. If the theme name exists in an object in the themes.js file it will set the theme colors accordingly. It will also save the theme name to local storage so that the theme persists after page refresh.
 
 const addTheme = (theme) => {
@@ -62,6 +119,13 @@ const addTheme = (theme) => {
       }
     },
     {
+      selectorType: 'applyThemeToIds',
+      selectors: ['theme-heading'],
+      css: {
+        color: theme.colorSecondary
+      }
+    },
+    {
       selectorType: 'applyThemeToPseudoClasses',
       selectors: ['#theme-selection-container .theme:nth-of-type(2n)'],
       css: {
@@ -91,7 +155,7 @@ const addTheme = (theme) => {
 
 const applyTheme = (themeName) => {
   const savedCustomColors = localStorage.getItem('customColors')
-  savedThemeColors = JSON.parse(savedCustomColors)
+  const savedThemeColors = JSON.parse(savedCustomColors)
 
   const colorArray = [
     savedThemeColors.colorPrimary,
@@ -168,7 +232,7 @@ const addCustomThemeSelector = (theme) => {
     bgPrimary
   } = theme
 
-  themeDiv = document.createElement('div')
+  let themeDiv = document.createElement('div')
   themeDiv.setAttribute('id', `theme-${name}`)
   themeDiv.classList.add('theme')
   themeDiv.setAttribute('value', name)
@@ -188,32 +252,29 @@ const addCustomThemeSelector = (theme) => {
     color.classList.add('color')
 
     if (name === 'custom') {
-      color.innerHTML = `
-        <input id="custom-color-${i}" type="color" value="#ffffff" onchange="applyCustomColor(id, value)">
-      `
+      const parent = document.querySelector(`#${name}-col-${i}`)
+      let newElement = document.createElement('input')
+      
+
+      const attributes = {
+        id: `custom-color-${i}`,
+        type: 'color',
+        value: '#ffffff'
+      }
+
+      for (const key in attributes) {
+        newElement.setAttribute(key, attributes[key])
+      }
+
+      newElement.addEventListener('change', (e) => 
+        applyCustomColor(newElement.id, e.target.value))
+
+      color.appendChild(newElement)
     }
     document.getElementById(`palette-${name}`).appendChild(color).style.backgroundColor = colorArray[i]
   }
 }
 
-const applyCustomColor = (id, value) => {
-  const colorIndex = id[id.length - 1]
-  const colArr = document.getElementById('palette-custom').getElementsByClassName('color')
-  const col = colArr[colorIndex]
-  col.style.backgroundColor = value
-
-  console.log(colArr)
-
-  let customColors = localStorage.getItem('customColors')
-  customColors = JSON.parse(customColors)
-
-  if (colorIndex == 0) { customColors.colorPrimary = value }
-  else if (colorIndex == 1) { customColors.colorSecondary = value }
-  else if (colorIndex == 2) { customColors.colorTertiary = value }
-  else if (colorIndex == 3) { customColors.bgSecondary = value }
-  else if (colorIndex == 4) { customColors.bgPrimary = value }
-
-  localStorage.setItem('customColors', JSON.stringify(customColors))
-  localStorage.setItem('userTheme', 'custom')
-  applyTheme('custom')
-}
+renderElement()
+addThemeSelector()
+checkTheme()

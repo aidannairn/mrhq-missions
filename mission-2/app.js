@@ -258,11 +258,11 @@ const addCustomThemeSelector = (theme) => {
 
   const colorArray = [colorPrimary, colorSecondary, colorTertiary, bgSecondary, bgPrimary]
 
-  for (let i = 0; i <= 4; i++) {
+  colorArray.forEach((colorItem, index) => {
     const colorObj = {
       parentSelector: `#palette-${name}`,
       tagName: 'div',
-      attributes: { id: `${name}-col-${i}`, class: 'color' },
+      attributes: { id: `${name}-col-${index}`, class: 'color' },
     }
 
     const color = renderElement(colorObj)
@@ -271,29 +271,41 @@ const addCustomThemeSelector = (theme) => {
       const colorInputObj = {
         tagName: 'input',
         attributes: { 
-          id: `custom-color-${i}`, 
+          id: `custom-color-${index}`, 
           type: 'color', 
           value: '#ffffff' 
         }
       }
       const colorInput = renderElement(colorInputObj, color)
 
-      colorInput.addEventListener('input', (e) => {
-        applyCustomColor(colorInput.id, e.target.value)
+      colorInput.addEventListener('input', event => {
+        applyCustomColor(colorInput.id, event.target.value)
       })
+      /* 
+          Activated via an Event Listener.
+          When a custom color input is clicked - remove the transition delay that is applied to the Theme Wrapper on load. Doing so gives a more responsive feel when the user changes a color.
+
+          This listener also adds an additional Event Listener to check when an element other than the current input is selected. If so, the transition delay of one second should be reapplied.
+      */
+      const handleColorInput = () => {
+        const themeWrapper = document.getElementById('theme-wrapper')
+        themeWrapper.style.transition = '0s'
+        
+        const handleColorInputEscape = event => {
+          const withinBoundaries = event.composedPath().includes(colorInput)
+          if (!withinBoundaries) {
+            themeWrapper.style.transition = '1s'
+            document.removeEventListener('click', handleColorInputEscape, true)
+          }
+        }
+        // Added a third parameter to the Event Lister called a useCapture. By setting this value to true, the Event Listener can be removed later.
+        document.addEventListener('click', handleColorInputEscape, true)
+      }
+      colorInput.addEventListener('click', (event) => handleColorInput(event))
     }
-    color.style.backgroundColor = colorArray[i]
-  }
+    color.style.backgroundColor = colorItem
+  })
 }
-
-// renderElement()
-elements.forEach(element => renderElement(element))
-addThemeSelector()
-checkTheme()
-
-
-let toggleThemeSelectBtn = document.getElementById('toggle-theme-select-btn')
-toggleThemeSelectBtn.addEventListener('click', () => toggleThemeSelect())
 
 const toggleThemeSelect = () => {
   const themeSelectionContainer = document.getElementById('theme-selection-container')
@@ -303,3 +315,15 @@ const toggleThemeSelect = () => {
   let isVisible = themeSelectionContainer.classList.contains('hide')
   toggleThemeSelectBtn.textContent = `${isVisible ? 'Show Themes' : 'Hide Themes'}`
 }
+
+// renderElement()
+elements.forEach(element => renderElement(element))
+addThemeSelector()
+checkTheme()
+
+// Add event listener to button to that theme selection can be toggled
+const toggleThemeSelectBtn = document.getElementById('toggle-theme-select-btn')
+toggleThemeSelectBtn.addEventListener('click', () => toggleThemeSelect())
+
+document.getElementById('theme-wrapper').style.transition = '1s'
+// mainElement.style.transition = '1s'

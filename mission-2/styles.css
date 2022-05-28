@@ -22,10 +22,10 @@ body {
   padding: 1rem;
 }
 
-nav a {
+.nav-btn {
   text-decoration: none;
   text-transform: uppercase;
-  margin: 5px 0;
+  margin: 5px 2.5px;
   border: 2px solid;
   border-radius: 5px;
   padding: 5px;
@@ -37,15 +37,22 @@ nav a {
 
 main {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  padding: 1rem 1rem;
   padding-bottom: 5rem;
 }
 
 #theme-selection-container {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  margin-bottom: 1rem;
   width: 100%;
+}
+
+.hide {
+  display: none!important;
+  /* visibility: hidden; */
 }
 
 .theme-container h2 {
@@ -91,6 +98,10 @@ main {
   height: 30px;
   width: 30px;
   opacity: 0;
+}
+
+#content {
+  width: 100%;
 }
 
 footer {

@@ -28,8 +28,8 @@ const elements = [
   {
     parentSelector: 'nav',
     tagName: 'a',
-    attributes: { href: '#', class: 'nav-btn' },
-    content: 'Three'
+    attributes: { id: 'toggle-theme-select-btn', class: 'nav-btn' },
+    content: 'Show Themes'
   },
   {
     parentSelector: '#theme-wrapper',
@@ -38,13 +38,19 @@ const elements = [
   {
     parentSelector: 'main',
     tagName: 'div',
-    attributes: { id: 'theme-selection-container' }
+    attributes: { id: 'theme-selection-container', class: 'hide' }
   },
   {
     parentSelector: '#theme-selection-container',
     tagName: 'h2',
     attributes: { id: 'theme-heading' },
     content: 'Choose your theme!'
+  },
+  {
+    parentSelector: 'main',
+    tagName: 'div',
+    attributes: { id: 'content' },
+    content: '[Insert content here]'
   },
   {
     parentSelector: '#theme-wrapper',

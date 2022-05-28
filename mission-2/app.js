@@ -278,3 +278,15 @@ const addCustomThemeSelector = (theme) => {
 renderElement()
 addThemeSelector()
 checkTheme()
+
+let toggleThemeSelectBtn = document.getElementById('toggle-theme-select-btn')
+toggleThemeSelectBtn.addEventListener('click', () => toggleThemeSelect())
+
+const toggleThemeSelect = () => {
+  const themeSelectionContainer = document.getElementById('theme-selection-container')
+
+  themeSelectionContainer.classList.toggle('hide')
+  
+  let isVisible = themeSelectionContainer.classList.contains('hide')
+  toggleThemeSelectBtn.textContent = `${isVisible ? 'Show Themes' : 'Hide Themes'}`
+}

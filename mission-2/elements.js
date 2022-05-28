@@ -12,24 +12,23 @@ const elements = [
   {
     parentSelector: '#navbar',
     tagName: 'nav',
-  },
-  {
-    parentSelector: 'nav',
-    tagName: 'a',
-    attributes: { class: 'nav-btn' },
-    content: 'One'
-  },
-  {
-    parentSelector: 'nav',
-    tagName: 'a',
-    attributes: { class: 'nav-btn' },
-    content: 'Two'
-  },
-  {
-    parentSelector: 'nav',
-    tagName: 'a',
-    attributes: { id: 'toggle-theme-select-btn', class: 'nav-btn' },
-    content: 'Show Themes'
+    childElements: [
+      {
+        tagName: 'a',
+        attributes: { class: 'nav-btn' },
+        content: 'One'
+      },
+      {
+        tagName: 'a',
+        attributes: { class: 'nav-btn' },
+        content: 'Two'
+      },
+      {
+        tagName: 'a',
+        attributes: { id: 'toggle-theme-select-btn', class: 'nav-btn' },
+        content: 'Show Themes'
+      }
+    ]
   },
   {
     parentSelector: '#theme-wrapper',
@@ -50,7 +49,23 @@ const elements = [
     parentSelector: 'main',
     tagName: 'div',
     attributes: { id: 'content' },
-    content: '[Insert content here]'
+    content: '[Insert content here]',
+    childElements: [
+      {
+        tagName: 'h2',
+        content: 'Inside content'
+      },
+      {
+        tagName: 'div',
+        content: 'Also inside content',
+        childElements: [
+          {
+            tagName: 'h3',
+            content: 'Inside div inside content'
+          }
+        ]
+      }
+    ]
   },
   {
     parentSelector: '#theme-wrapper',

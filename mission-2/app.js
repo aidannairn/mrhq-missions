@@ -31,28 +31,37 @@ const applyCustomColor = (id, value) => {
   applyTheme('custom')
 }
 
-// Render initial elements within the body.
-const renderElement = () => {
-  elements.forEach(element => {
+// Render elements
+const renderElement = (element, parentEl) => {
     const {
       parentSelector,
       tagName,
       attributes,
-      content
+      content,
+      childElements
     } = element
 
-    const parent = document.querySelector(parentSelector)
+    let parentElement
+    parentSelector 
+      ? parentElement = document.querySelector(parentSelector)
+      : parentElement = parentEl
+
     let newElement = document.createElement(tagName)
     if (attributes) { 
-      for (const key in attributes) {
+      for (const key in attributes) { 
         newElement.setAttribute(key, attributes[key])
       }
     }
-    
+
     if (content) newElement.textContent = content
-    
-    parent.appendChild(newElement)
-  })
+
+    if (childElements) {
+      childElements.forEach(element => {
+        const childElement = renderElement(element, newElement)
+        return newElement.appendChild(childElement)
+      })
+    } 
+    return parentElement.appendChild(newElement)
 }
 
 // Function is given the theme name as a parameter. If the theme name exists in an object in the themes.js file it will set the theme colors accordingly. It will also save the theme name to local storage so that the theme persists after page refresh.
@@ -134,21 +143,18 @@ const addTheme = (theme) => {
     }
   ]
 
-  for (let i = 0; i < selectorThemeStyles.length; i++) {
-    const stylesItem = selectorThemeStyles[i]
-    let customCss = stylesItem.css
-    let stylesItemArray = []
-    const { selectorType, selectors } = stylesItem
-
-    stylesItemArray = selectThemeBy(selectorType, selectors)
+  selectorThemeStyles.forEach(customStyleObj => {
+    const { selectorType, selectors, css } = customStyleObj
+    const stylesItemArray = selectThemeBy(selectorType, selectors)
 
     for (let i = 0; i < stylesItemArray.length; i++) {
       const index = i
-      for (const key in customCss) {
-        stylesItemArray[index].style[key] = customCss[key]
+      for (const key in css) {
+        stylesItemArray[index].style[key] = css[key]
       }
     }
-  }
+  })
+
   localStorage.setItem('userTheme', themeName)
   return themeWrapper
 }
@@ -165,19 +171,16 @@ const applyTheme = (themeName) => {
     savedThemeColors.bgPrimary,
   ]
 
-  for (let i = 0; i <= 4; i++) {
-    document.getElementById(`custom-col-${i}`).style.backgroundColor = colorArray[i]
-  }
+  colorArray.forEach((color, index) => {
+    document.getElementById(`custom-col-${index}`).style.backgroundColor = color
+  })
   
   if (themeName === 'custom') {
     addTheme(savedThemeColors)
   } else {
-    for (let i = 0; i < themes.length; i++) {
-      const theme = themes[i]
-      if (theme.name === themeName) {
-        addTheme(theme)
-      }
-    }
+    themes.forEach(theme => {
+      if (theme.name === themeName) { addTheme(theme) }
+    })
   }
 }
 
@@ -217,11 +220,11 @@ const checkTheme = () => {
 // This function dynamically renders theme selection boxes within the Theme Selection Container div. Each theme selection box is given a unique id, a class of 'theme', a color palette, and includes an event listener so that when a theme is clicked - the applyTheme function is called.
 
 const addThemeSelector = () => {
-  for (let i = 0; i < themes.length; i++) addCustomThemeSelector(themes[i])
+  themes.forEach(theme => addCustomThemeSelector(theme))
 }
 
 const addCustomThemeSelector = (theme) => {
-  let themeHeading = document.getElementById('theme-selection-container')
+  const themeSelectionContainer = document.getElementById('theme-selection-container')
 
   const {
     name,
@@ -232,52 +235,62 @@ const addCustomThemeSelector = (theme) => {
     bgPrimary
   } = theme
 
-  let themeDiv = document.createElement('div')
-  themeDiv.setAttribute('id', `theme-${name}`)
-  themeDiv.classList.add('theme')
-  themeDiv.setAttribute('value', name)
-  themeDiv.addEventListener('click', () => applyTheme(name))
+  const themeObj = {
+    tagName: 'div',
+    attributes: { id: `theme-${name}`, class: 'theme', value: name },
+    childElements: [
+      {
+        tagName: 'h6',
+        attributes: { class: 'palette-heading' },
+        content: name
+      },
+      {
+        tagName: 'div',
+        attributes: { id: `palette-${name}`, class: 'colors' }
+      }
+    ]
+  }
 
-  themeDiv.innerHTML = `
-    <h6 class="palette-heading">${name}</h6>
-    <div id="palette-${name}" class="colors"></div>
-  `
-  themeHeading.appendChild(themeDiv)
+  const themeContainer = renderElement(themeObj, themeSelectionContainer)
+  themeContainer.addEventListener('click', () => applyTheme(name))
+
+  themeSelectionContainer.appendChild(themeContainer)
 
   const colorArray = [colorPrimary, colorSecondary, colorTertiary, bgSecondary, bgPrimary]
 
   for (let i = 0; i <= 4; i++) {
-    const color = document.createElement('div')
-    color.setAttribute('id', `${name}-col-${i}`)
-    color.classList.add('color')
+    const colorObj = {
+      parentSelector: `#palette-${name}`,
+      tagName: 'div',
+      attributes: { id: `${name}-col-${i}`, class: 'color' },
+    }
+
+    const color = renderElement(colorObj)
 
     if (name === 'custom') {
-      const parent = document.querySelector(`#${name}-col-${i}`)
-      let newElement = document.createElement('input')
-      
-
-      const attributes = {
-        id: `custom-color-${i}`,
-        type: 'color',
-        value: '#ffffff'
+      const colorInputObj = {
+        tagName: 'input',
+        attributes: { 
+          id: `custom-color-${i}`, 
+          type: 'color', 
+          value: '#ffffff' 
+        }
       }
+      const colorInput = renderElement(colorInputObj, color)
 
-      for (const key in attributes) {
-        newElement.setAttribute(key, attributes[key])
-      }
-
-      newElement.addEventListener('change', (e) => 
-        applyCustomColor(newElement.id, e.target.value))
-
-      color.appendChild(newElement)
+      colorInput.addEventListener('input', (e) => {
+        applyCustomColor(colorInput.id, e.target.value)
+      })
     }
-    document.getElementById(`palette-${name}`).appendChild(color).style.backgroundColor = colorArray[i]
+    color.style.backgroundColor = colorArray[i]
   }
 }
 
-renderElement()
+// renderElement()
+elements.forEach(element => renderElement(element))
 addThemeSelector()
 checkTheme()
+
 
 let toggleThemeSelectBtn = document.getElementById('toggle-theme-select-btn')
 toggleThemeSelectBtn.addEventListener('click', () => toggleThemeSelect())
@@ -286,7 +299,7 @@ const toggleThemeSelect = () => {
   const themeSelectionContainer = document.getElementById('theme-selection-container')
 
   themeSelectionContainer.classList.toggle('hide')
-  
+
   let isVisible = themeSelectionContainer.classList.contains('hide')
   toggleThemeSelectBtn.textContent = `${isVisible ? 'Show Themes' : 'Hide Themes'}`
 }

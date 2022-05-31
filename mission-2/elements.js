@@ -49,21 +49,10 @@ const elements = [
     parentSelector: 'main',
     tagName: 'div',
     attributes: { id: 'content' },
-    content: '[Insert content here]',
     childElements: [
       {
-        tagName: 'h2',
-        content: 'Inside content'
-      },
-      {
         tagName: 'div',
-        content: 'Also inside content',
-        childElements: [
-          {
-            tagName: 'h3',
-            content: 'Inside div inside content'
-          }
-        ]
+        attributes: { id: 'dynamic-container' },
       }
     ]
   },

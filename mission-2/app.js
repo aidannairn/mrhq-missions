@@ -1,15 +1,7 @@
-import themes from './themes.js'
+import { themes, selectorThemeStyles } from './themes.js'
+import dynamicDiv from './dynamic-div.js'
 import elements from './elements.js'
 
-/*  Activated via an Event Listener. 
-    When a color input value is changed - pass the id of the input and new value to the function below. 
-
-    The input field is set to have an opacity of 0. This is because when setting input to type, the input has automatic formating applied that doesn't match the styling for the other themes.
-
-    The first part to this sets the background color of the container of the input.
-
-    The second part to this function modifies the color value that is saved to Local Storage.
-*/
 const applyCustomColor = (id, value) => {
   const colorIndex = id[id.length - 1] // Get the value of the last character of the id. The last character will always be a number between 0 and 4.
   const colArr = document.getElementById('palette-custom').getElementsByClassName('color')
@@ -38,7 +30,8 @@ const renderElement = (element, parentEl) => {
       tagName,
       attributes,
       content,
-      childElements
+      childElements,
+      eventListener
     } = element
 
     let parentElement
@@ -47,6 +40,7 @@ const renderElement = (element, parentEl) => {
       : parentElement = parentEl
 
     let newElement = document.createElement(tagName)
+
     if (attributes) { 
       for (const key in attributes) { 
         newElement.setAttribute(key, attributes[key])
@@ -61,26 +55,35 @@ const renderElement = (element, parentEl) => {
         return newElement.appendChild(childElement)
       })
     } 
+
     return parentElement.appendChild(newElement)
 }
 
-// Function is given the theme name as a parameter. If the theme name exists in an object in the themes.js file it will set the theme colors accordingly. It will also save the theme name to local storage so that the theme persists after page refresh.
-
 const addTheme = (theme) => {
+  const {
+    name,
+    colorPrimary,
+    colorSecondary,
+    colorTertiary,
+    bgSecondary,
+    bgPrimary
+  } = theme
+
   const themeWrapper = document.getElementById('theme-wrapper')
-  let themeName = theme.name
-  themeWrapper.style.backgroundColor = theme.bgPrimary
-  themeWrapper.style.borderColor = theme.bgSecondary
-  themeWrapper.style.color = theme.colorPrimary
+  themeWrapper.style.backgroundColor = bgPrimary
+  themeWrapper.style.borderColor = bgSecondary
+  themeWrapper.style.color = colorPrimary
 
   const selectThemeBy = (type, selectors) => {
     let selectorArray = []
     const selectorTypes = {
       applyThemeToClassNames: function(selector){
-        selectorArray = document.getElementsByClassName(selector)
+        const elements = document.getElementsByClassName(selector)
+        selectorArray = [...selectorArray, ...elements]
       },
       applyThemeToTagNames: function(selector){
-        selectorArray = document.getElementsByTagName(selector)
+        const elements = (document.getElementsByTagName(selector))
+        selectorArray = [...selectorArray, ...elements]
       },
       applyThemeToIds: function(selector){
         const element = document.getElementById(selector)
@@ -105,45 +108,7 @@ const addTheme = (theme) => {
     return selectorArray
   }
 
-  const selectorThemeStyles = [
-    {
-      selectorType: 'applyThemeToClassNames',
-      selectors: ['bg-secondary'],
-      css: {
-        backgroundColor: theme.bgSecondary
-      }
-    },
-    {
-      selectorType: 'applyThemeToTagNames',
-      selectors: ['a'],
-      css: {
-        color: theme.colorPrimary
-      }
-    },
-    {
-      selectorType: 'applyThemeToIds',
-      selectors: ['navbar'],
-      css: {
-        backgroundColor: theme.bgSecondary
-      }
-    },
-    {
-      selectorType: 'applyThemeToIds',
-      selectors: ['theme-heading'],
-      css: {
-        color: theme.colorSecondary
-      }
-    },
-    {
-      selectorType: 'applyThemeToPseudoClasses',
-      selectors: ['#theme-selection-container .theme:nth-of-type(2n)'],
-      css: {
-        backgroundColor: theme.bgSecondary
-      }
-    }
-  ]
-
-  selectorThemeStyles.forEach(customStyleObj => {
+  selectorThemeStyles(theme).forEach(customStyleObj => {
     const { selectorType, selectors, css } = customStyleObj
     const stylesItemArray = selectThemeBy(selectorType, selectors)
 
@@ -155,7 +120,7 @@ const addTheme = (theme) => {
     }
   })
 
-  localStorage.setItem('userTheme', themeName)
+  localStorage.setItem('userTheme', name)
   return themeWrapper
 }
 
@@ -182,45 +147,6 @@ const applyTheme = (themeName) => {
       if (theme.name === themeName) { addTheme(theme) }
     })
   }
-}
-
-// When the body element loads/reloads this function will check to see whether a theme has been saved to localStorage. If it has - apply that theme by retrieving the theme name and using it as a parameter for the applyTheme function. If not - set the theme name to 'default' and call the applyTheme function.
-
-const checkTheme = () => {
-  let themeName
-  let customColors = {}
-
-  if (localStorage.customColors != null) {
-    let savedCustomColors
-    savedCustomColors = localStorage.getItem('customColors')
-    customColors = JSON.parse(savedCustomColors)
-    themeName = customColors.name
-  } else {
-    customColors = {
-      name: 'custom',
-      colorPrimary: '#212529',
-      colorSecondary: '#495057',
-      colorTertiary: '#ced4da',
-      bgSecondary: '#dee2e6',
-      bgPrimary: '#f8f9fa'
-    }
-    localStorage.setItem('customColors', JSON.stringify(customColors))
-    themeName = customColors.name
-  }
-
-  if (localStorage.userTheme != null) {
-    themeName = localStorage.getItem('userTheme')
-  } else {
-    themeName = 'default'
-  }
-  addCustomThemeSelector(customColors)
-  applyTheme(themeName)
-}
-
-// This function dynamically renders theme selection boxes within the Theme Selection Container div. Each theme selection box is given a unique id, a class of 'theme', a color palette, and includes an event listener so that when a theme is clicked - the applyTheme function is called.
-
-const addThemeSelector = () => {
-  themes.forEach(theme => addCustomThemeSelector(theme))
 }
 
 const addCustomThemeSelector = (theme) => {
@@ -316,14 +242,116 @@ const toggleThemeSelect = () => {
   toggleThemeSelectBtn.textContent = `${isVisible ? 'Show Themes' : 'Hide Themes'}`
 }
 
-// renderElement()
+
+
+const addDynamicContent = () => {
+  const dynamicContentArray = document.getElementsByClassName('dynamic-div')
+  const index = dynamicContentArray.length
+
+  if (document.querySelector('input[name="elem-type"]')) {
+    const textInputContainer = document.getElementById('text-input-container')
+    const imageInputContainer = document.getElementById('image-input-container')
+    document.querySelectorAll('input[name="elem-type"]').forEach((elem) => {
+      elem.addEventListener("change", event => {
+        var elemType = event.target.value
+        switch (elemType) {
+          case 'img':
+            imageInputContainer.classList.remove('hide')
+            textInputContainer.classList.add('hide')
+          break;
+          case 'hr':
+            imageInputContainer.classList.add('hide')
+            textInputContainer.classList.add('hide')
+          break;
+          default:
+            imageInputContainer.classList.add('hide')
+            textInputContainer.classList.remove('hide')
+          break;
+        }
+      })
+    })
+  }
+  
+
+  const handleDynamicDivSubmit = (event) => {
+    event.preventDefault()
+    const textType = document.querySelector("input[name='elem-type']:checked").value
+
+    const content = document.getElementById('dynamic-content-text').value
+
+    const image = document.getElementById('dynamic-content-image').value
+
+    const dynamicContent = document.getElementById('dynamic-content')
+
+    const dynamicDivContent = {
+      parentSelector: '#dynamic-content',
+      tagName: textType,
+      content: content
+    } 
+
+    if (textType === 'hr') {
+      dynamicDivContent.content = ''
+      dynamicDivContent.attributes = { class: 'horizontal-rule' }
+    }
+
+    if (textType === 'img') {
+      dynamicDivContent.content = ''
+      dynamicDivContent.attributes = { class: 'dynamic-image', src: image }
+    }
+
+    dynamicContent.append(renderElement(dynamicDivContent))
+
+
+  }
+  const dynamicDivForm = document.getElementById('dynamic-form')
+
+  dynamicDivForm.addEventListener('submit', handleDynamicDivSubmit)
+
+}
+
+// On load - Do the following:
 elements.forEach(element => renderElement(element))
-addThemeSelector()
-checkTheme()
+
+themes.forEach(theme => addCustomThemeSelector(theme))
+
+// When the body element loads/reloads this function will check to see whether a theme has been saved to localStorage. If it has - apply that theme by retrieving the theme name and using it as a parameter for the applyTheme function. If not - set the theme name to 'default' and call the applyTheme function.
+
+let themeName
+let customColors = {}
+
+if (localStorage.customColors != null) {
+  let savedCustomColors
+  savedCustomColors = localStorage.getItem('customColors')
+  customColors = JSON.parse(savedCustomColors)
+  themeName = customColors.name
+} else {
+  customColors = {
+    name: 'custom',
+    colorPrimary: '#212529',
+    colorSecondary: '#495057',
+    colorTertiary: '#ced4da',
+    bgSecondary: '#dee2e6',
+    bgPrimary: '#f8f9fa'
+  }
+  localStorage.setItem('customColors', JSON.stringify(customColors))
+  themeName = customColors.name
+}
+
+if (localStorage.userTheme != null) {
+  themeName = localStorage.getItem('userTheme')
+} else {
+  themeName = 'default'
+}
+addCustomThemeSelector(customColors)
+
+renderElement(dynamicDiv)
+
+addDynamicContent()
+
+applyTheme(themeName)
 
 // Add event listener to button to that theme selection can be toggled
 const toggleThemeSelectBtn = document.getElementById('toggle-theme-select-btn')
 toggleThemeSelectBtn.addEventListener('click', () => toggleThemeSelect())
 
 document.getElementById('theme-wrapper').style.transition = '1s'
-// mainElement.style.transition = '1s'

@@ -275,9 +275,10 @@ const addDynamicContent = () => {
 
   const handleDynamicDivSubmit = (event) => {
     event.preventDefault()
-    const textType = document.querySelector("input[name='elem-type']:checked").value
+    const elemType = document.querySelector("input[name='elem-type']:checked").value
 
-    const content = document.getElementById('dynamic-content-text').value
+    const contentInput = document.getElementById('dynamic-content-text')
+    const content = contentInput.value
 
     const image = document.getElementById('dynamic-content-image').value
 
@@ -285,28 +286,50 @@ const addDynamicContent = () => {
 
     const dynamicDivContent = {
       parentSelector: '#dynamic-content',
-      tagName: textType,
+      tagName: elemType,
       content: content
     } 
 
-    if (textType === 'hr') {
+    if (elemType === 'hr') {
       dynamicDivContent.content = ''
       dynamicDivContent.attributes = { class: 'horizontal-rule' }
     }
 
-    if (textType === 'img') {
+    if (elemType === 'img') {
       dynamicDivContent.content = ''
       dynamicDivContent.attributes = { class: 'dynamic-image', src: image }
     }
 
     dynamicContent.append(renderElement(dynamicDivContent))
 
-
+    contentInput.value = ''
   }
   const dynamicDivForm = document.getElementById('dynamic-form')
 
   dynamicDivForm.addEventListener('submit', handleDynamicDivSubmit)
 
+}
+
+const clearDynamicDiv = () => {
+  console.log('clicked')
+  const dynamicContent = document.getElementById('dynamic-content')
+  dynamicContent.innerHTML = ''
+}
+
+const saveDynamicDiv = () => {
+  const dynamicContent = document.getElementById('dynamic-content').innerHTML
+  localStorage.setItem('dynamicDiv', dynamicContent)
+  
+  // dynamicContent.innerHTML = ''
+}
+
+const loadDynamicDiv = () => {
+  if (localStorage.dynamicDiv != null) {
+    const dynamicContent = document.getElementById('dynamic-content')
+    const dynamicDiv = localStorage.getItem('dynamicDiv')
+    dynamicContent.innerHTML = ''
+    dynamicContent.innerHTML += dynamicDiv
+  }
 }
 
 // On load - Do the following:
@@ -348,10 +371,18 @@ renderElement(dynamicDiv)
 
 addDynamicContent()
 
+loadDynamicDiv()
+
 applyTheme(themeName)
+
+const clearBtn = document.getElementById('clear-btn')
+clearBtn.addEventListener('click', clearDynamicDiv)
+
+const saveBtn = document.getElementById('save-btn')
+saveBtn.addEventListener('click', saveDynamicDiv)
 
 // Add event listener to button to that theme selection can be toggled
 const toggleThemeSelectBtn = document.getElementById('toggle-theme-select-btn')
-toggleThemeSelectBtn.addEventListener('click', () => toggleThemeSelect())
+toggleThemeSelectBtn.addEventListener('click', toggleThemeSelect)
 
 document.getElementById('theme-wrapper').style.transition = '1s'

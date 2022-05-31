@@ -15,13 +15,13 @@ const elements = [
     childElements: [
       {
         tagName: 'a',
-        attributes: { class: 'nav-btn' },
-        content: 'One'
+        attributes: { id: 'clear-btn', class: 'nav-btn' },
+        content: 'Clear'
       },
       {
         tagName: 'a',
-        attributes: { class: 'nav-btn' },
-        content: 'Two'
+        attributes: { id: 'save-btn', class: 'nav-btn' },
+        content: 'Save'
       },
       {
         tagName: 'a',

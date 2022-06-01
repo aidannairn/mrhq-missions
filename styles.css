@@ -1,0 +1,45 @@
+* {
+  font-family: Arial;
+}
+
+a {
+  background-color: blue;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 0.5rem;
+  text-decoration: none;
+  float: right;
+}
+
+a:hover {
+  cursor: pointer;
+  background-color: rgb(93, 0, 255);
+}
+
+h1 {
+  text-align: center;
+}
+
+h2, h3 {
+  margin: 0;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  justify-self: space-evenly;
+}
+
+.mission-container {
+  border-bottom: 2px solid black;
+  margin-bottom: 0.25rem;
+  padding-bottom: 0.25rem;
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  #content {
+    padding: 0 20rem;
+  }
+}

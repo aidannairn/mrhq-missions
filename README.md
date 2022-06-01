@@ -14,7 +14,7 @@ Keep track of my mission progress below!
 | Mission | Status | Link |
 | ------------- |:-------------:| -----:|
 | One | :white_check_mark: | [Mission One](./mission-1/) |
-| Two | :x: | *n/a* |
+| Two | :white_check_mark: | [Mission Two](./mission-2/) |
 | Three | :x: | *n/a* |
 | Four | :x: | *n/a* |
 | X | :x: | *n/a* |

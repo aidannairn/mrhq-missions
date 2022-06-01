@@ -30,7 +30,15 @@ const themes = [
     colorTertiary: '#adc178',
     bgSecondary: '#dde5b6',
     bgPrimary: '#f0ead2'
-  }
+  },
+  // {
+  //   name: '',
+  //   colorPrimary: '',
+  //   colorSecondary: '',
+  //   colorTertiary: '',
+  //   bgSecondary: '',
+  //   bgPrimary: ''
+  // }
 ]
 
 const selectorThemeStyles = (theme) => {

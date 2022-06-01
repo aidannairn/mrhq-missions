@@ -2,61 +2,133 @@ import { themes, selectorThemeStyles } from './themes.js'
 import dynamicDiv from './dynamic-div.js'
 import elements from './elements.js'
 
-const applyCustomColor = (id, value) => {
-  const colorIndex = id[id.length - 1] // Get the value of the last character of the id. The last character will always be a number between 0 and 4.
-  const colArr = document.getElementById('palette-custom').getElementsByClassName('color')
-  const col = colArr[colorIndex]
-  col.style.backgroundColor = value
+// Every element that is being rendered on the page should be passed through this function.
+const addNewElement = (element, parentEl) => {
+  const {
+    parentSelector,
+    tagName,
+    attributes,
+    content,
+    childElements,
+    eventListener
+  } = element
 
-  let customColors = localStorage.getItem('customColors')
-  customColors = JSON.parse(customColors)
+  let parentElement
+  parentSelector 
+    ? parentElement = document.querySelector(parentSelector)
+    : parentElement = parentEl
 
-  // Match the Color Index to a number and set the new color value accordingly.
-  if (colorIndex == 0) { customColors.colorPrimary = value }
-  else if (colorIndex == 1) { customColors.colorSecondary = value }
-  else if (colorIndex == 2) { customColors.colorTertiary = value }
-  else if (colorIndex == 3) { customColors.bgSecondary = value }
-  else if (colorIndex == 4) { customColors.bgPrimary = value }
+  let newElement = document.createElement(tagName)
 
-  localStorage.setItem('customColors', JSON.stringify(customColors))
-  localStorage.setItem('userTheme', 'custom')
-  applyTheme('custom')
+  if (attributes) { 
+    for (const key in attributes) { 
+      newElement.setAttribute(key, attributes[key])
+    }
+  }
+
+  if (content) newElement.textContent = content
+
+  if (childElements) {
+    childElements.forEach(element => {
+      const childElement = addNewElement(element, newElement)
+      return newElement.appendChild(childElement)
+    })
+  } 
+  return parentElement.appendChild(newElement)
 }
 
-// Render elements
-const renderElement = (element, parentEl) => {
-    const {
-      parentSelector,
-      tagName,
-      attributes,
-      content,
-      childElements,
-      eventListener
-    } = element
+// START Theme
+const addThemeSelector = (theme) => {
+  const themeSelectionContainer = document.getElementById('theme-selection-container')
 
-    let parentElement
-    parentSelector 
-      ? parentElement = document.querySelector(parentSelector)
-      : parentElement = parentEl
+  const {
+    name,
+    colorPrimary,
+    colorSecondary,
+    colorTertiary,
+    bgSecondary,
+    bgPrimary
+  } = theme
 
-    let newElement = document.createElement(tagName)
-
-    if (attributes) { 
-      for (const key in attributes) { 
-        newElement.setAttribute(key, attributes[key])
+  const themeObj = {
+    tagName: 'div',
+    attributes: { id: `theme-${name}`, class: 'theme', value: name },
+    childElements: [
+      {
+        tagName: 'h6',
+        attributes: { class: 'palette-heading' },
+        content: name
+      },
+      {
+        tagName: 'div',
+        attributes: { id: `palette-${name}`, class: 'colors' }
       }
+    ]
+  }
+
+  const themeContainer = addNewElement(themeObj, themeSelectionContainer)
+  themeContainer.addEventListener('click', () => applyTheme(name))
+
+  themeSelectionContainer.appendChild(themeContainer)
+
+  const colorArray = [colorPrimary, colorSecondary, colorTertiary, bgSecondary, bgPrimary]
+
+  colorArray.forEach((colorItem, index) => {
+    const colorObj = {
+      parentSelector: `#palette-${name}`,
+      tagName: 'div',
+      attributes: { id: `${name}-col-${index}`, class: 'color' },
     }
 
-    if (content) newElement.textContent = content
+    const color = addNewElement(colorObj)
 
-    if (childElements) {
-      childElements.forEach(element => {
-        const childElement = renderElement(element, newElement)
-        return newElement.appendChild(childElement)
+    if (name === 'custom') {
+      const colorInputObj = {
+        tagName: 'input',
+        attributes: { 
+          id: `custom-color-${index}`, 
+          type: 'color', 
+          value: '#ffffff' 
+        }
+      }
+      const colorInput = addNewElement(colorInputObj, color)
+
+      colorInput.addEventListener('input', event => {
+        applyCustomColor(colorInput.id, event.target.value)
       })
-    } 
+      /* 
+          Activated via an Event Listener.
+          When a custom color input is clicked - remove the transition delay that is applied to the Theme Wrapper on load. Doing so gives a more responsive feel when the user changes a color.
 
-    return parentElement.appendChild(newElement)
+          This listener also adds an additional Event Listener to check when an element other than the current input is selected. If so, the transition delay of one second should be reapplied.
+      */
+      const handleColorInput = () => {
+        const themeWrapper = document.getElementById('theme-wrapper')
+        themeWrapper.style.transition = '0s'
+        
+        const handleColorInputEscape = event => {
+          const withinBoundaries = event.composedPath().includes(colorInput)
+          if (!withinBoundaries) {
+            themeWrapper.style.transition = '1s'
+            document.removeEventListener('click', handleColorInputEscape, true)
+          }
+        }
+        // Added a third parameter to the Event Lister called a useCapture. By setting this value to true, the Event Listener can be removed later.
+        document.addEventListener('click', handleColorInputEscape, true)
+      }
+      colorInput.addEventListener('click', (event) => handleColorInput(event))
+    }
+    color.style.backgroundColor = colorItem
+  })
+}
+
+const toggleThemeSelect = () => {
+  const themeSelectionContainer = document.getElementById('theme-selection-container')
+
+  themeSelectionContainer.classList.toggle('hide')
+
+  let isVisible = themeSelectionContainer.classList.contains('hide')
+  toggleThemeSelectBtn.textContent = `${isVisible ? 'Show Themes' : 'Hide Themes'}`
 }
 
 const addTheme = (theme) => {
@@ -149,105 +221,29 @@ const applyTheme = (themeName) => {
   }
 }
 
-const addCustomThemeSelector = (theme) => {
-  const themeSelectionContainer = document.getElementById('theme-selection-container')
+const applyCustomColor = (id, value) => {
+  const colorIndex = id[id.length - 1] // Get the value of the last character of the id. The last character will always be a number between 0 and 4.
+  const colArr = document.getElementById('palette-custom').getElementsByClassName('color')
+  const col = colArr[colorIndex]
+  col.style.backgroundColor = value
 
-  const {
-    name,
-    colorPrimary,
-    colorSecondary,
-    colorTertiary,
-    bgSecondary,
-    bgPrimary
-  } = theme
+  let customColors = localStorage.getItem('customColors')
+  customColors = JSON.parse(customColors)
 
-  const themeObj = {
-    tagName: 'div',
-    attributes: { id: `theme-${name}`, class: 'theme', value: name },
-    childElements: [
-      {
-        tagName: 'h6',
-        attributes: { class: 'palette-heading' },
-        content: name
-      },
-      {
-        tagName: 'div',
-        attributes: { id: `palette-${name}`, class: 'colors' }
-      }
-    ]
-  }
+  // Match the Color Index to a number and set the new color value accordingly.
+  if (colorIndex == 0) { customColors.colorPrimary = value }
+  else if (colorIndex == 1) { customColors.colorSecondary = value }
+  else if (colorIndex == 2) { customColors.colorTertiary = value }
+  else if (colorIndex == 3) { customColors.bgSecondary = value }
+  else if (colorIndex == 4) { customColors.bgPrimary = value }
 
-  const themeContainer = renderElement(themeObj, themeSelectionContainer)
-  themeContainer.addEventListener('click', () => applyTheme(name))
-
-  themeSelectionContainer.appendChild(themeContainer)
-
-  const colorArray = [colorPrimary, colorSecondary, colorTertiary, bgSecondary, bgPrimary]
-
-  colorArray.forEach((colorItem, index) => {
-    const colorObj = {
-      parentSelector: `#palette-${name}`,
-      tagName: 'div',
-      attributes: { id: `${name}-col-${index}`, class: 'color' },
-    }
-
-    const color = renderElement(colorObj)
-
-    if (name === 'custom') {
-      const colorInputObj = {
-        tagName: 'input',
-        attributes: { 
-          id: `custom-color-${index}`, 
-          type: 'color', 
-          value: '#ffffff' 
-        }
-      }
-      const colorInput = renderElement(colorInputObj, color)
-
-      colorInput.addEventListener('input', event => {
-        applyCustomColor(colorInput.id, event.target.value)
-      })
-      /* 
-          Activated via an Event Listener.
-          When a custom color input is clicked - remove the transition delay that is applied to the Theme Wrapper on load. Doing so gives a more responsive feel when the user changes a color.
-
-          This listener also adds an additional Event Listener to check when an element other than the current input is selected. If so, the transition delay of one second should be reapplied.
-      */
-      const handleColorInput = () => {
-        const themeWrapper = document.getElementById('theme-wrapper')
-        themeWrapper.style.transition = '0s'
-        
-        const handleColorInputEscape = event => {
-          const withinBoundaries = event.composedPath().includes(colorInput)
-          if (!withinBoundaries) {
-            themeWrapper.style.transition = '1s'
-            document.removeEventListener('click', handleColorInputEscape, true)
-          }
-        }
-        // Added a third parameter to the Event Lister called a useCapture. By setting this value to true, the Event Listener can be removed later.
-        document.addEventListener('click', handleColorInputEscape, true)
-      }
-      colorInput.addEventListener('click', (event) => handleColorInput(event))
-    }
-    color.style.backgroundColor = colorItem
-  })
+  localStorage.setItem('customColors', JSON.stringify(customColors))
+  localStorage.setItem('userTheme', 'custom')
+  applyTheme('custom')
 }
-
-const toggleThemeSelect = () => {
-  const themeSelectionContainer = document.getElementById('theme-selection-container')
-
-  themeSelectionContainer.classList.toggle('hide')
-
-  let isVisible = themeSelectionContainer.classList.contains('hide')
-  toggleThemeSelectBtn.textContent = `${isVisible ? 'Show Themes' : 'Hide Themes'}`
-}
-
-
-
+// END Theme
+// START Dynamic Content
 const addDynamicContent = () => {
-  const dynamicContentArray = document.getElementsByClassName('dynamic-div')
-  const index = dynamicContentArray.length
-
   if (document.querySelector('input[name="elem-type"]')) {
     const textInputContainer = document.getElementById('text-input-container')
     const imageInputContainer = document.getElementById('image-input-container')
@@ -272,7 +268,6 @@ const addDynamicContent = () => {
     })
   }
   
-
   const handleDynamicDivSubmit = (event) => {
     event.preventDefault()
     const elemType = document.querySelector("input[name='elem-type']:checked").value
@@ -300,27 +295,13 @@ const addDynamicContent = () => {
       dynamicDivContent.attributes = { class: 'dynamic-image', src: image }
     }
 
-    dynamicContent.append(renderElement(dynamicDivContent))
+    dynamicContent.append(addNewElement(dynamicDivContent))
 
     contentInput.value = ''
   }
   const dynamicDivForm = document.getElementById('dynamic-form')
 
   dynamicDivForm.addEventListener('submit', handleDynamicDivSubmit)
-
-}
-
-const clearDynamicDiv = () => {
-  console.log('clicked')
-  const dynamicContent = document.getElementById('dynamic-content')
-  dynamicContent.innerHTML = ''
-}
-
-const saveDynamicDiv = () => {
-  const dynamicContent = document.getElementById('dynamic-content').innerHTML
-  localStorage.setItem('dynamicDiv', dynamicContent)
-  
-  // dynamicContent.innerHTML = ''
 }
 
 const loadDynamicDiv = () => {
@@ -332,13 +313,25 @@ const loadDynamicDiv = () => {
   }
 }
 
-// On load - Do the following:
-elements.forEach(element => renderElement(element))
+const clearDynamicDiv = () => {
+  console.log('clicked')
+  const dynamicContent = document.getElementById('dynamic-content')
+  dynamicContent.innerHTML = ''
+}
 
-themes.forEach(theme => addCustomThemeSelector(theme))
+const saveDynamicDiv = () => {
+  const dynamicContent = document.getElementById('dynamic-content').innerHTML
+  localStorage.setItem('dynamicDiv', dynamicContent)
+}
 
-// When the body element loads/reloads this function will check to see whether a theme has been saved to localStorage. If it has - apply that theme by retrieving the theme name and using it as a parameter for the applyTheme function. If not - set the theme name to 'default' and call the applyTheme function.
+// START On page load - Do the following.
+// Render all initial elements stored in elements.js file.
+elements.forEach(element => addNewElement(element))
 
+// Add each theme from themes.js file to the theme selector
+themes.forEach(theme => addThemeSelector(theme))
+
+// Check to see whether a theme has been saved to localStorage. If it has - apply that theme by retrieving the theme name and using it as a parameter for the applyTheme function. If not - set the theme name to 'default' and call the applyTheme function.
 let themeName
 let customColors = {}
 
@@ -365,9 +358,12 @@ if (localStorage.userTheme != null) {
 } else {
   themeName = 'default'
 }
-addCustomThemeSelector(customColors)
 
-renderElement(dynamicDiv)
+document.getElementById('theme-wrapper').style.transition = '1s'
+
+addThemeSelector(customColors)
+
+addNewElement(dynamicDiv)
 
 addDynamicContent()
 
@@ -375,14 +371,12 @@ loadDynamicDiv()
 
 applyTheme(themeName)
 
+// Add Event Listeners
 const clearBtn = document.getElementById('clear-btn')
 clearBtn.addEventListener('click', clearDynamicDiv)
 
 const saveBtn = document.getElementById('save-btn')
 saveBtn.addEventListener('click', saveDynamicDiv)
 
-// Add event listener to button to that theme selection can be toggled
 const toggleThemeSelectBtn = document.getElementById('toggle-theme-select-btn')
 toggleThemeSelectBtn.addEventListener('click', toggleThemeSelect)
-
-document.getElementById('theme-wrapper').style.transition = '1s'
